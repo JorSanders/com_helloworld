@@ -8,13 +8,8 @@ defined('_JEXEC') or die('Restricted access');
  *
  * @since  0.0.1
  */
-class HelloWorldModelHelloWorld extends JModelItem
+class HelloWorldModelHelloWorld extends JModelAdmin
 {
-    /**
-     * @var array messages
-     */
-    protected $messages;
-
     /**
      * Method to get a table object, load it if necessary.
      *
@@ -32,35 +27,55 @@ class HelloWorldModelHelloWorld extends JModelItem
     }
 
     /**
-     * Get the message
+     * Method to get the record form.
      *
-     * @param   integer  $id  Greeting Id
+     * @param   array    $data      Data for the form.
+     * @param   boolean  $loadData  True if the form is to load its own data (default case), false if not.
      *
-     * @return  string        Fetched String from Table for relevant Id
+     * @return  mixed    A JForm object on success, false on failure
+     *
+     * @since   1.6
      */
-    public function getMsg($id = 1)
+    public function getForm($data = array(), $loadData = true)
     {
-        if (!is_array($this->messages))
+        // Get the form.
+        $form = $this->loadForm(
+            'com_helloworld.helloworld',
+            'helloworld',
+            array(
+                'control' => 'jform',
+                'load_data' => $loadData
+            )
+        );
+
+        if (empty($form))
         {
-            $this->messages = array();
+            return false;
         }
 
-        if (!isset($this->messages[$id]))
+        return $form;
+    }
+
+    /**
+     * Method to get the data that should be injected in the form.
+     *
+     * @return  mixed  The data for the form.
+     *
+     * @since   1.6
+     */
+    protected function loadFormData()
+    {
+        // Check the session for previously entered form data.
+        $data = JFactory::getApplication()->getUserState(
+            'com_helloworld.edit.helloworld.data',
+            array()
+        );
+
+        if (empty($data))
         {
-            // Request the selected id
-            $jinput = JFactory::getApplication()->input;
-            $id     = $jinput->get('id', 1, 'INT');
-
-            // Get a TableHelloWorld instance
-            $table = $this->getTable();
-
-            // Load the message
-            $table->load($id);
-
-            // Assign the message
-            $this->messages[$id] = $table->greeting;
+            $data = $this->getItem();
         }
 
-        return $this->messages[$id];
+        return $data;
     }
 }
