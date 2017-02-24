@@ -24,26 +24,30 @@ class JFormFieldHelloWorld extends JFormFieldList
      *
      * @return  array  An array of JHtml options.
      */
-    protected function getOptions()
-    {
-        $db    = JFactory::getDBO();
-        $query = $db->getQuery(true);
-        $query->select('id,greeting');
-        $query->from('#__helloworld');
-        $db->setQuery((string) $query);
-        $messages = $db->loadObjectList();
-        $options  = array();
+	protected function getOptions()
+	{
+		$db    = JFactory::getDBO();
+		$query = $db->getQuery(true);
+		$query->select('#__helloworld.id as id,greeting,#__categories.title as category,catid');
+		$query->from('#__helloworld');
+		$query->leftJoin('#__categories on catid=#__categories.id');
+		// Retrieve only published items
+		$query->where('#__helloworld.published = 1');
+		$db->setQuery((string) $query);
+		$messages = $db->loadObjectList();
+		$options  = array();
 
-        if ($messages)
-        {
-            foreach ($messages as $message)
-            {
-                $options[] = JHtml::_('select.option', $message->id, $message->greeting);
-            }
-        }
+		if ($messages)
+		{
+			foreach ($messages as $message)
+			{
+				$options[] = JHtml::_('select.option', $message->id, $message->greeting .
+					($message->catid ? ' (' . $message->category . ')' : ''));
+			}
+		}
 
-        $options = array_merge(parent::getOptions(), $options);
+		$options = array_merge(parent::getOptions(), $options);
 
-        return $options;
-    }
+		return $options;
+	}
 }

@@ -17,9 +17,11 @@
     <orderEntry type="module-library">
       <library name="PHP" type="php">
         <CLASSES>
+          <root url="file://$MODULE_DIR$/../easyfit" />
           <root url="file://$MODULE_DIR$/../../php/pear" />
         </CLASSES>
         <SOURCES>
+          <root url="file://$MODULE_DIR$/../easyfit" />
           <root url="file://$MODULE_DIR$/../../php/pear" />
         </SOURCES>
       </library>
