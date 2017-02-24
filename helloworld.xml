@@ -2,8 +2,15 @@
 <extension type="component" version="3.2.0" method="upgrade">
 
     <name>COM_HELLOWORLD</name>
+    <!-- The following elements are optional and free of formatting constraints -->
+    <creationDate>February 2015</creationDate>
+    <author>John Doe</author>
+    <authorEmail>john.doe@example.org</authorEmail>
+    <authorUrl>http://www.example.org</authorUrl>
+    <copyright>Copyright Info</copyright>
+    <license>License Info</license>
     <!--  The version string is recorded in the components table -->
-    <version>0.0.12</version>
+    <version>0.0.13</version>
     <!-- The description is optional and defaults to the name -->
     <description>COM_HELLOWORLD_DESCRIPTION</description>
 
@@ -54,6 +61,7 @@
         <files folder="admin">
             <!-- Admin Main File Copy Section -->
             <filename>index.html</filename>
+            <filename>config.xml</filename>
             <filename>helloworld.php</filename>
             <filename>controller.php</filename>
             <filename>access.xml</filename>
