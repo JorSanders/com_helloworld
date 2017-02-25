@@ -14,33 +14,53 @@ defined('_JEXEC') or die('Restricted access');
  */
 abstract class HelloWorldHelper
 {
-	/**
-	 * Configure the Linkbar.
-	 *
-	 * @return Bool
-	 */
+    /**
+     * Configure the Linkbar.
+     */
+    public static function addSubmenu($submenu)
+    {
+        JSubMenuHelper::addEntry(
+            JText::_('COM_HELLOWORLD_SUBMENU_MESSAGES'),
+            'index.php?option=com_helloworld',
+            $submenu == 'messages'
+        );
 
-	public static function addSubmenu($submenu)
-	{
-		JSubMenuHelper::addEntry(
-			JText::_('COM_HELLOWORLD_SUBMENU_MESSAGES'),
-			'index.php?option=com_helloworld',
-			$submenu == 'helloworlds'
-		);
+        JSubMenuHelper::addEntry(
+            JText::_('COM_HELLOWORLD_SUBMENU_CATEGORIES'),
+            'index.php?option=com_categories&view=categories&extension=com_helloworld',
+            $submenu == 'categories'
+        );
 
-		JSubMenuHelper::addEntry(
-			JText::_('COM_HELLOWORLD_SUBMENU_CATEGORIES'),
-			'index.php?option=com_categories&view=categories&extension=com_helloworld',
-			$submenu == 'categories'
-		);
+        // set some global property
+        $document = JFactory::getDocument();
+        $document->addStyleDeclaration('.icon-48-helloworld ' .
+            '{background-image: url(../media/com_helloworld/images/tux-48x48.png);}');
+        if ($submenu == 'categories')
+        {
+            $document->setTitle(JText::_('COM_HELLOWORLD_ADMINISTRATION_CATEGORIES'));
+        }
+    }
 
-		// Set some global property
-		$document = JFactory::getDocument();
-		$document->addStyleDeclaration('.icon-48-helloworld ' .
-			'{background-image: url(../media/com_helloworld/images/tux-48x48.png);}');
-		if ($submenu == 'categories')
-		{
-			$document->setTitle(JText::_('COM_HELLOWORLD_ADMINISTRATION_CATEGORIES'));
-		}
-	}
+    /**
+     * Get the actions
+     */
+    public static function getActions($messageId = 0)
+    {
+        $result	= new JObject;
+
+        if (empty($messageId)) {
+            $assetName = 'com_helloworld';
+        }
+        else {
+            $assetName = 'com_helloworld.message.'.(int) $messageId;
+        }
+
+        $actions = JAccess::getActions('com_helloworld', 'component');
+
+        foreach ($actions as $action) {
+            $result->set($action->name, JFactory::getUser()->authorise($action->name, $assetName));
+        }
+
+        return $result;
+    }
 }

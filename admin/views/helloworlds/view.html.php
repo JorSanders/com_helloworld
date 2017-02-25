@@ -1,6 +1,6 @@
 <?php
 
-// No direct access to this file
+/// No direct access to this file
 defined('_JEXEC') or die('Restricted access');
 
 /**
@@ -24,24 +24,25 @@ class HelloWorldViewHelloWorlds extends JViewLegacy
         $app = JFactory::getApplication();
         $context = "helloworld.list.admin.helloworld";
         // Get data from the model
-        $this->items			= $this->get('Items');
-        $this->pagination		= $this->get('Pagination');
-        $this->state			= $this->get('State');
-        $this->filter_order 	= $app->getUserStateFromRequest($context.'filter_order', 'filter_order', 'greeting', 'cmd');
+        $this->items		= $this->get('Items');
+        $this->pagination	= $this->get('Pagination');
+        $this->state		= $this->get('State');
+        $this->filter_order	= $app->getUserStateFromRequest($context.'filter_order', 'filter_order', 'greeting', 'cmd');
         $this->filter_order_Dir = $app->getUserStateFromRequest($context.'filter_order_Dir', 'filter_order_Dir', 'asc', 'cmd');
         $this->filterForm    	= $this->get('FilterForm');
         $this->activeFilters 	= $this->get('ActiveFilters');
 
+        // What Access Permissions does this user have? What can (s)he do?
+        $this->canDo = HelloWorldHelper::getActions();
+
         // Check for errors.
         if (count($errors = $this->get('Errors')))
         {
-            JError::raiseError(500, implode('<br />', $errors));
-
-            return false;
+            throw new Exception(implode("\n", $errors), 500);
         }
 
-	    // Set the submenu
-	    HelloWorldHelper::addSubmenu('helloworlds');
+        // Set the submenu
+        HelloWorldHelper::addSubmenu('helloworlds');
 
         // Set the toolbar and number of found items
         $this->addToolBar();
@@ -70,17 +71,30 @@ class HelloWorldViewHelloWorlds extends JViewLegacy
         }
 
         JToolBarHelper::title($title, 'helloworld');
-        JToolBarHelper::deleteList('', 'helloworlds.delete');
-        JToolBarHelper::editList('helloworld.edit');
-        JToolBarHelper::addNew('helloworld.add');
-	    JToolBarHelper::preferences('com_helloworld');
+
+        if ($this->canDo->get('core.create'))
+        {
+            JToolBarHelper::addNew('helloworld.add', 'JTOOLBAR_NEW');
+        }
+        if ($this->canDo->get('core.edit'))
+        {
+            JToolBarHelper::editList('helloworld.edit', 'JTOOLBAR_EDIT');
+        }
+        if ($this->canDo->get('core.delete'))
+        {
+            JToolBarHelper::deleteList('', 'helloworlds.delete', 'JTOOLBAR_DELETE');
+        }
+        if ($this->canDo->get('core.admin'))
+        {
+            JToolBarHelper::divider();
+            JToolBarHelper::preferences('com_helloworld');
+        }
     }
     /**
      * Method to set up the document properties
      *
      * @return void
      */
-
     protected function setDocument()
     {
         $document = JFactory::getDocument();

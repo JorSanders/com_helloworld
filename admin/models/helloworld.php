@@ -13,9 +13,9 @@ class HelloWorldModelHelloWorld extends JModelAdmin
     /**
      * Method to get a table object, load it if necessary.
      *
-     * @param   string  $type    The table name. Optional.
-     * @param   string  $prefix  The class prefix. Optional.
-     * @param   array   $config  Configuration array for model. Optional.
+     * @param   string $type The table name. Optional.
+     * @param   string $prefix The class prefix. Optional.
+     * @param   array $config Configuration array for model. Optional.
      *
      * @return  JTable  A JTable object
      *
@@ -29,8 +29,8 @@ class HelloWorldModelHelloWorld extends JModelAdmin
     /**
      * Method to get the record form.
      *
-     * @param   array    $data      Data for the form.
-     * @param   boolean  $loadData  True if the form is to load its own data (default case), false if not.
+     * @param   array $data Data for the form.
+     * @param   boolean $loadData True if the form is to load its own data (default case), false if not.
      *
      * @return  mixed    A JForm object on success, false on failure
      *
@@ -48,22 +48,23 @@ class HelloWorldModelHelloWorld extends JModelAdmin
             )
         );
 
-        if (empty($form))
-        {
+        if (empty($form)) {
             return false;
         }
 
         return $form;
     }
+
     /**
      * Method to get the script that have to be included on the form
      *
-     * @return string	Script files
+     * @return string    Script files
      */
     public function getScript()
     {
         return 'administrator/components/com_helloworld/models/forms/helloworld.js';
     }
+
     /**
      * Method to get the data that should be injected in the form.
      *
@@ -79,11 +80,20 @@ class HelloWorldModelHelloWorld extends JModelAdmin
             array()
         );
 
-        if (empty($data))
-        {
+        if (empty($data)) {
             $data = $this->getItem();
         }
 
         return $data;
+    }
+
+    /**
+     * Method to check if it's OK to delete a message. Overwrites JModelAdmin::canDelete
+     */
+    protected function canDelete($record)
+    {
+        if (!empty($record->id)) {
+            return JFactory::getUser()->authorise("core.delete", "com_helloworld.message." . $record->id);
+        }
     }
 }
